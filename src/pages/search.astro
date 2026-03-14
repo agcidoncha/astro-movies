@@ -1,0 +1,119 @@
+---
+export const prerender = false;
+import MainLayout from "../../layouts/MainLayout.astro";
+
+import MovieCard from "../components/MovieCard.astro";
+
+const apiKey = import.meta.env.TMDB_API_KEY;
+const query = Astro.url.searchParams.get("query") || "";
+
+let movies = [];
+
+if (query) {
+  const url = `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${encodeURIComponent(query)}&language=es-ES`;
+
+  const response = await fetch(url);
+  const data = await response.json();
+
+  movies = data.results || [];
+}
+---
+
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Buscar películas</title>
+
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #111;
+        color: white;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 40px 20px;
+      }
+
+      h1 {
+        margin-bottom: 20px;
+      }
+
+      form {
+        margin-bottom: 30px;
+      }
+
+      input {
+        width: 100%;
+        max-width: 380px;
+        padding: 12px 14px;
+        font-size: 16px;
+        border-radius: 8px;
+        border: 1px solid #333;
+        background: #1c1c1c;
+        color: white;
+      }
+
+      button {
+        margin-left: 10px;
+        padding: 12px 18px;
+        background: #e50914;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+
+      .grid {
+        margin-top: 30px;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 24px;
+      }
+
+      @media (max-width: 768px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        button {
+          margin-left: 0;
+          margin-top: 12px;
+          display: block;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="container">
+      <h1>Buscar películas</h1>
+
+      <form method="GET">
+        <input
+          type="text"
+          name="query"
+          placeholder="Buscar película..."
+          value={query}
+        />
+        <button type="submit">Buscar</button>
+      </form>
+
+      {
+        query && (
+          <p>
+            Resultados para: <strong>{query}</strong>
+          </p>
+        )
+      }
+
+      <div class="grid">
+        {movies.map((movie) => <MovieCard movie={movie} />)}
+      </div>
+    </main>
+  </body>
+</html>
