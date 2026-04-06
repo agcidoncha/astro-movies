@@ -1,0 +1,267 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import MovieCard from "../components/MovieCard.astro";
+import heroImage from "../assets/back.png";
+
+const currentYear = new Date().getFullYear();
+const startYear = 1900;
+const years = [];
+
+const apiKey = import.meta.env.TMDB_API_KEY;
+
+const popularUrl = `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&with_genres=27,878&sort_by=popularity.desc&language=es-ES`;
+
+const popularResponse = await fetch(popularUrl);
+const popularData = await popularResponse.json();
+
+const popularMovies = popularData.results || [];
+
+for (let year = currentYear; year >= startYear; year--) {
+  years.push(year);
+}
+---
+
+<MainLayout title="Películas de terror">
+  <style>
+    .hero {
+      min-height: 78vh;
+      display: grid;
+      place-items: center;
+      padding: 40px 20px;
+      position: relative;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    .hero-content {
+      width: 100%;
+      max-width: 860px;
+      text-align: center;
+      background: rgba(8, 8, 10, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 36px;
+      padding: 56px 42px;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 28px 80px rgba(0, 0, 0, 0.48);
+    }
+
+    .eyebrow {
+      margin: 0 0 16px;
+      color: #ff2e2e;
+      font-size: 0.95rem;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0 0 24px;
+      font-size: clamp(3.6rem, 5vw, 5.2rem);
+      line-height: 0.98;
+      letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+      max-width: 680px;
+      margin: 0 auto 32px;
+      color: #d8d8d8;
+      font-size: 1.05rem;
+      line-height: 1.85;
+      letter-spacing: 0.01em;
+    }
+
+    .hero-actions {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+    }
+
+    .hero-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 160px;
+      padding: 14px 22px;
+      border-radius: 999px;
+      font-size: 0.98rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        background 0.18s ease,
+        opacity 0.18s ease;
+    }
+
+    .hero-button:hover {
+      transform: translateY(-3px);
+    }
+
+    .hero-button--primary {
+      background: linear-gradient(135deg, #e50914 0%, #ff3a2d 100%);
+      color: white;
+      box-shadow: 0 14px 32px rgba(229, 9, 20, 0.25);
+    }
+
+    .hero-button--primary:hover {
+      box-shadow: 0 18px 40px rgba(229, 9, 20, 0.32);
+    }
+
+    .hero-button--secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fafafa;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+    }
+
+    .hero-button--secondary:hover {
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    .picker-box {
+      margin-top: 16px;
+    }
+
+    select {
+      width: 100%;
+      max-width: 320px;
+      padding: 14px 16px;
+      margin: 8px auto;
+      display: block;
+      background: #141416;
+      color: white;
+      border: 1px solid #333;
+      border-radius: 14px;
+      font-size: 1rem;
+    }
+
+    button {
+      margin-top: 18px;
+      padding: 14px 24px;
+      background: #e50914;
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        background 0.18s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.28);
+    }
+
+    @media (max-width: 768px) {
+      .hero-content {
+        padding: 44px 26px;
+      }
+
+      h1 {
+        font-size: 3.2rem;
+      }
+
+      .subtitle {
+        font-size: 0.98rem;
+      }
+    }
+
+    .popular-section {
+      padding: 10px 40px 60px;
+    }
+
+    .popular-section h2 {
+      margin-bottom: 20px;
+    }
+
+    .popular-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 24px;
+      padding: 0 20px;
+    }
+    @media (max-width: 768px) {
+      .popular-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+
+  <main
+    class="hero"
+    style={`background-image:
+      linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.85)),
+      url(${heroImage.src});`}
+  >
+    <div class="hero-content">
+      <p class="eyebrow">Catálogo de cine</p>
+      <h1>TERROR & SCI-FI</h1>
+      <p class="subtitle">
+        Explora películas por género y año, descubre actores y navega entre
+        títulos como en una pequeña plataforma de cine.
+      </p>
+
+      <div class="hero-actions">
+        <button class="hero-button hero-button--primary" id="explore-horror">
+          Explorar terror
+        </button>
+
+        <button class="hero-button hero-button--secondary" id="explore-scifi">
+          Explorar sci-fi
+        </button>
+      </div>
+
+      <div class="picker-box">
+        <select id="genre">
+          <option value="">Selecciona un género</option>
+          <option value="horror">Terror</option>
+          <option value="scifi">Ciencia ficción</option>
+        </select>
+
+        <select id="year">
+          <option value="">Selecciona un año</option>
+
+          {years.map((year) => <option value={year}>{year}</option>)}
+        </select>
+
+        <button id="go">Ver películas</button>
+      </div>
+
+      <script>
+        const genre = document.getElementById("genre");
+        const year = document.getElementById("year");
+        const button = document.getElementById("go");
+        const exploreHorror = document.getElementById("explore-horror");
+        const exploreScifi = document.getElementById("explore-scifi");
+        exploreHorror?.addEventListener("click", () => {
+          const selectedYear = year.value || new Date().getFullYear();
+          window.location.href = `/browse/horror-${selectedYear}`;
+        });
+
+        exploreScifi?.addEventListener("click", () => {
+          const selectedYear = year.value || new Date().getFullYear();
+          window.location.href = `/browse/scifi-${selectedYear}`;
+        });
+
+        button?.addEventListener("click", () => {
+          if (genre.value && year.value) {
+            window.location.href = `/browse/${genre.value}-${year.value}`;
+          }
+        });
+      </script>
+    </div>
+  </main>
+  <section class="popular-section container">
+    <h2>Populares ahora</h2>
+
+    <div class="popular-grid">
+      {popularMovies.slice(0, 8).map((movie) => <MovieCard movie={movie} />)}
+    </div>
+  </section>
+</MainLayout>
