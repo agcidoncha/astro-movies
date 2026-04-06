@@ -1,64 +1,72 @@
 ---
+/* PROJECT CONTEXT: - Astro project (movies app tipo IMDb) - Data comes from
+TMDB API - Layout: - MainLayout.astro - Components: - MovieCard.astro →
+renderiza cada película - Pages: - index.astro → home - search.astro → búsqueda
+- movie/[id].astro → detalle de película - actor/[id].astro → detalle de actor -
+browse/[slug].astro → listas por género/año GOAL: - Improve UI without breaking
+logic - Do not change routes unless explicitly requested */
+
 const { movie } = Astro.props;
 const releaseYear = movie.release_date?.split("-")[0] || "Sin fecha";
 const rating = movie.vote_average ? movie.vote_average.toFixed(1) : "N/A";
 ---
 
-
 <style>
-    .card {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    background: #1a1a1a;
-    border-radius: 10px;
+  .card {
+    position: relative;
+    display: block;
+    border-radius: 12px;
     overflow: hidden;
     text-decoration: none;
     color: white;
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
+  }
 
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
+  .card:hover {
+    transform: scale(1.08);
+    box-shadow: 0 24px 48px rgba(229, 9, 20, 0.3);
+  }
 
-    .card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-}
-  
+  .poster {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: filter 0.3s ease;
+  }
 
- .poster {
-  width: 100%;
-  aspect-ratio: 2 / 3;
-  object-fit: cover;
-  display: block;
-  background: #222;
-  transition: transform 0.3s ease;
-}
-
-.card:hover .poster {
-  transform: scale(1.05);
-}
+  .card:hover .poster {
+    filter: brightness(0.75);
+  }
 
   .info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
     padding: 12px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+    transition: background 0.3s ease;
+  }
+
+  .card:hover .info {
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.95),
+      rgba(0, 0, 0, 0.2)
+    );
   }
 
   .title {
-  margin: 0 0 8px;
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1.4;
-
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
 
   .meta {
-    margin: 0;
-    font-size: 13px;
-    color: #bdbdbd;
-    line-height: 1.4;
+    font-size: 0.85rem;
+    color: #bbb;
   }
 </style>
 
